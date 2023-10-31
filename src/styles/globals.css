@@ -2,26 +2,40 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+html,
+body,
+#__next {
+  height: 100%;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
+* {
+  user-select: none;
+  -moz-user-select: none;
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+#__next {
+  @apply bg-neutral-500;
+}
+
+.link {
+  @apply flex items-center justify-center w-11 h-11 rounded-full transition-all duration-200 bg-transparent;
+  @apply hover:bg-neutral-800;
+}
+
+.link--active {
+  @apply bg-neutral-800;
+}
+
+.btn--action {
+  @apply bg-neutral-800 border-2 border-neutral-700 p-4 rounded-xl text-white transition-all duration-150;
+  @apply hover:bg-neutral-700;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar {
+  scrollbar-width: none; /* For Firefox */
+  -ms-overflow-style: none; /* For Internet Explorer and Edge */
 }
