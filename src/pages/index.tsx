@@ -1,9 +1,15 @@
 import { useContext } from "react";
 import { UserContext } from "@/contexts/UserContext";
 import Head from "next/head";
+import toast from "react-hot-toast";
 
 export default function Home() {
-  const { user } = useContext(UserContext);
+  const { user, dispatch } = useContext(UserContext);
+
+  const handleSignOut = () => {
+    dispatch({ type: "SIGN_OUT" });
+    toast.success("Signed out successfully");
+  };
 
   return (
     <>
@@ -16,7 +22,17 @@ export default function Home() {
 
       <>
         <p>home</p>
-        {user && <p>user: {user.email}</p>}
+        {user && (
+          <div className="flex items-center justify-between">
+            <p>user: {user.email}</p>
+            <button
+              onClick={handleSignOut}
+              className="rounded-xl bg-white px-4 py-2 text-black"
+            >
+              signout
+            </button>
+          </div>
+        )}
       </>
     </>
   );

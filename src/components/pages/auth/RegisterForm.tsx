@@ -1,25 +1,35 @@
 import { authApi } from "@/api/auth";
-import { saveTokenOnLocalStorage } from "@/api/token";
-import React, { useState } from "react";
+import { UserContext } from "@/contexts/UserContext";
+import React, { useContext, useState } from "react";
+import toast from "react-hot-toast";
 
 interface RegisterFormProps {
   switchAuthMode: (mode: "signin" | "register") => void;
 }
 
 const RegisterForm = ({ switchAuthMode }: RegisterFormProps) => {
+  const { dispatch } = useContext(UserContext);
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const userData = await authApi.register(email, password);
-      console.log("userData", userData);
-      saveTokenOnLocalStorage(userData.token);
-      alert("success");
+      const response = await authApi.register(email, password);
+      console.log("register response ", response);
+
+      dispatch({
+        type: "REGISTER",
+        payload: {
+          token: response.token,
+        },
+      });
+
+      toast.success(`Registered successfully, ${email}`);
     } catch (error) {
       console.log(error);
-      alert("error");
+      toast.error("Error registering");
     }
   };
 

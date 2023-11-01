@@ -1,25 +1,36 @@
 import { authApi } from "@/api/auth";
-import { saveTokenOnLocalStorage } from "@/api/token";
-import React, { useState } from "react";
+
+import { UserContext } from "@/contexts/UserContext";
+import React, { useContext, useState } from "react";
+import toast from "react-hot-toast";
 
 interface SignInFormProps {
   switchAuthMode: (mode: "signin" | "register") => void;
 }
 
 const SignInForm = ({ switchAuthMode }: SignInFormProps) => {
+  const { dispatch } = useContext(UserContext);
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const userData = await authApi.signIn(email, password);
-      console.log("userData", userData);
-      saveTokenOnLocalStorage(userData.token);
-      alert("success");
+      const response = await authApi.signIn(email, password);
+      console.log("signin response", response);
+
+      dispatch({
+        type: "SIGN_IN",
+        payload: {
+          token: response.token,
+        },
+      });
+
+      toast.success(`Signed in successfully, ${email}`);
     } catch (error) {
       console.log(error);
-      alert("error");
+      toast.error("Error signing in");
     }
   };
 

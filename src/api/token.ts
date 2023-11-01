@@ -1,5 +1,11 @@
 import { jwtDecode } from "jwt-decode";
 
+interface DecodedToken {
+  id: string;
+  email: string;
+  iat: string;
+}
+
 export const saveTokenOnLocalStorage = (token: string) => {
   localStorage.setItem("crocantes-app-token", token);
 };
@@ -13,6 +19,6 @@ export const deleteTokenFromLocalStorage = () => {
 };
 
 export const decodeToken = (token: string) => {
-  const decoded = jwtDecode(token);
+  const decoded: DecodedToken = jwtDecode(token);
   return decoded;
 };

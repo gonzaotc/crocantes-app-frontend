@@ -8,11 +8,18 @@ interface AuthLayoutProps {
 }
 
 const AuthLayout = ({ children }: AuthLayoutProps) => {
-  const { user } = useContext(UserContext);
+  const { user, recoveringUserSession } = useContext(UserContext);
   const [authMode, setAuthMode] = useState<"signin" | "register">("signin");
 
+  console.log("user state in AuthLayout", user);
+
+  if (recoveringUserSession) {
+    // TODO: Implement a loading page
+    return <></>;
+  }
+
   if (user) {
-    return { children };
+    return <>{children}</>;
   }
 
   if (authMode === "signin") {
