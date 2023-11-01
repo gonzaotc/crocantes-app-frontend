@@ -22,9 +22,9 @@ export const UserContextProvider = ({ children }: UserContextProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    setTimeout(() => {
-      setUser({ email: "JohnDoe@JohnDoe.com" });
-    }, 2000);
+    // setTimeout(() => {
+    //   setUser({ email: "JohnDoe@JohnDoe.com" });
+    // }, 2000);
   }, []);
 
   return <UserContext.Provider value={{ user }}>{children}</UserContext.Provider>;

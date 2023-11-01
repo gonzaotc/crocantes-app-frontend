@@ -1,6 +1,5 @@
 @tailwind base;
 @tailwind components;
-@tailwind utilities;
 
 html,
 body,
@@ -16,6 +15,20 @@ body,
 #__next {
   @apply bg-neutral-500;
 }
+
+h1 {
+  @apply text-3xl font-bold text-neutral-100;
+}
+
+h2 {
+  @apply text-2xl font-bold text-neutral-100;
+}
+
+h3 {
+  @apply text-xl font-bold text-neutral-100;
+}
+
+@tailwind utilities;
 
 .link {
   @apply flex items-center justify-center w-11 h-11 rounded-full transition-all duration-200 bg-transparent;
