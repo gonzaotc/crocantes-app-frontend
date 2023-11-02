@@ -66,7 +66,6 @@ export const UserContextProvider = ({ children }: UserContextProviderProps) => {
     if (action.type === "SIGN_IN" || action.type === "REGISTER") {
       const decodedToken = decodeToken(action.payload.token);
       saveTokenOnLocalStorage(action.payload.token);
-      console.log("decoded token", decodedToken);
       dispatch({
         type: "DECODED_USER",
         payload: {
@@ -102,9 +101,11 @@ export const UserContextProvider = ({ children }: UserContextProviderProps) => {
       }
     } catch (error) {
       console.log(error);
+      toast.error("Error at recovering user session");
     } finally {
       setRecoveringUserSession(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

@@ -7,6 +7,7 @@ import { useRouter } from "next/router";
 import React from "react";
 import AuthLayout from "../layouts/AuthLayout";
 import { Toaster } from "react-hot-toast";
+import { PortfolioContextProvider } from "../contexts/PortfolioContext";
 
 interface AppWrapperProps {
   children: React.ReactNode;
@@ -33,24 +34,26 @@ export default function App({ Component, pageProps }: AppProps) {
     <AppWrapper>
       <UserContextProvider>
         <AuthLayout>
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.div
-              key={router.pathname}
-              initial="initialState"
-              animate="animateState"
-              exit="exitState"
-              transition={{
-                duration: 0.5,
-              }}
-              variants={{
-                initialState: { opacity: 0 },
-                animateState: { opacity: 1 },
-                // exitState: { opacity: 0 },
-              }}
-            >
-              <Component {...pageProps} />
-            </motion.div>
-          </AnimatePresence>
+          <PortfolioContextProvider>
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={router.pathname}
+                initial="initialState"
+                animate="animateState"
+                exit="exitState"
+                transition={{
+                  duration: 0.5,
+                }}
+                variants={{
+                  initialState: { opacity: 0 },
+                  animateState: { opacity: 1 },
+                  // exitState: { opacity: 0 },
+                }}
+              >
+                <Component {...pageProps} />
+              </motion.div>
+            </AnimatePresence>
+          </PortfolioContextProvider>
         </AuthLayout>
       </UserContextProvider>
     </AppWrapper>

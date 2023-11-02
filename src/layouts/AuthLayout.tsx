@@ -11,8 +11,6 @@ const AuthLayout = ({ children }: AuthLayoutProps) => {
   const { user, recoveringUserSession } = useContext(UserContext);
   const [authMode, setAuthMode] = useState<"signin" | "register">("signin");
 
-  console.log("user state in AuthLayout", user);
-
   if (recoveringUserSession) {
     // TODO: Implement a loading page
     return <></>;

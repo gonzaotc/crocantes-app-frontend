@@ -18,7 +18,6 @@ const SignInForm = ({ switchAuthMode }: SignInFormProps) => {
     e.preventDefault();
     try {
       const response = await authApi.signIn(email, password);
-      console.log("signin response", response);
 
       dispatch({
         type: "SIGN_IN",

@@ -17,7 +17,6 @@ const RegisterForm = ({ switchAuthMode }: RegisterFormProps) => {
     e.preventDefault();
     try {
       const response = await authApi.register(email, password);
-      console.log("register response ", response);
 
       dispatch({
         type: "REGISTER",

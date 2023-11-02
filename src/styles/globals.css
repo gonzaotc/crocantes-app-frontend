@@ -1,21 +1,6 @@
 @tailwind base;
 @tailwind components;
 
-html,
-body,
-#__next {
-  height: 100%;
-}
-
-* {
-  user-select: none;
-  -moz-user-select: none;
-}
-
-#__next {
-  @apply bg-neutral-500;
-}
-
 h1 {
   @apply text-3xl font-bold text-neutral-100;
 }
@@ -31,17 +16,12 @@ h3 {
 @tailwind utilities;
 
 .link {
-  @apply flex items-center justify-center w-11 h-11 rounded-full transition-all duration-200 bg-transparent;
+  @apply flex h-11 w-11 items-center justify-center rounded-full bg-transparent transition-all duration-200;
   @apply hover:bg-neutral-800;
 }
 
 .link--active {
   @apply bg-neutral-800;
-}
-
-.btn--action {
-  @apply bg-neutral-800 border-2 border-neutral-700 p-4 rounded-xl text-white transition-all duration-150;
-  @apply hover:bg-neutral-700;
 }
 
 .hide-scrollbar::-webkit-scrollbar {
