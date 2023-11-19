@@ -4,6 +4,7 @@ import Head from "next/head";
 import toast from "react-hot-toast";
 import { PortfolioContext } from "@/contexts/PortfolioContext";
 import BalanceDisplayer from "../components/pages/home/BalanceDisplayer";
+import NewSourceForm from "../components/pages/forms/NewSourceForm";
 
 export default function Home() {
   const { user, dispatch } = useContext(UserContext);
@@ -41,6 +42,8 @@ export default function Home() {
           </div>
 
           <BalanceDisplayer />
+
+          <NewSourceForm />
         </>
       )}
     </>

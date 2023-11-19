@@ -1,8 +1,9 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { Portfolio } from "../types";
+import { Portfolio, PortfolioByCurrencies } from "../types";
 import { UserContext } from "./UserContext";
 import { portfolioApi } from "@/api/portfolio";
 import toast from "react-hot-toast";
+import { transformPortfolioByCurrencies } from "@/business-logic/portfolio";
 
 interface PortfolioContextValue {
   portfolio: Portfolio | null;
@@ -26,6 +27,7 @@ export const PortfolioContextProvider = ({
   children,
 }: PortfolioContextProviderProps) => {
   const [portfolio, setPortfolio] = useState<Portfolio | null>(null);
+  const [portfolioByCurrencies, setPortfolioByCurrencies] = useState<PortfolioByCurrencies | null>(null);
   const [loadingPortfolio, setLoadingPortfolio] = useState<boolean>(true);
 
   const { user } = useContext(UserContext);
@@ -33,7 +35,12 @@ export const PortfolioContextProvider = ({
   const getUserPortfolio = async () => {
     try {
       const portfolio = await portfolioApi.getUserPortfolio();
+      const portfolioByCurrencies = transformPortfolioByCurrencies(portfolio);
+      
       console.log("user portfolio", portfolio);
+      console.log("user portfolio by currencies", portfolioByCurrencies);
+
+      setPortfolioByCurrencies(portfolioByCurrencies);
       setPortfolio(portfolio);
       toast.success("Successfully got your portfolio.");
     } catch (error) {

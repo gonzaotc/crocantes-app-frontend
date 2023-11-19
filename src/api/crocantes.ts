@@ -7,14 +7,15 @@ import { SourceType, CurrencyType } from "../types";
  */
 
 class CrocantesApi {
-  //   static async getSourceTypes(): Promise<SourceType[]> {
-  //     const sourceTypes = await apiClient.get("/api/sourceTypes");
-  //     return sourceTypes as unknown as SourceType[];
-  //   }
-  //   static async getCurrencyTypes() {
-  //     const currencyTypes = await apiClient.get("/api/currencyTypes");
-  //     return currencyTypes as unknown as CurrencyType[];
-  //   }
+  getSourceTypes = async (): Promise<SourceType[]> => {
+    const sourceTypes = await apiClient.get("/api/sourceTypes");
+    return sourceTypes.data as unknown as SourceType[];
+  }
+
+  getCurrencyTypes = async () => {
+    const currencyTypes = await apiClient.get("/api/currencyTypes");
+    return currencyTypes.data as unknown as CurrencyType[];
+  }
 }
 
-export const portfolioApi = new CrocantesApi();
+export const crocantesApi = new CrocantesApi();

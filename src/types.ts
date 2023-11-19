@@ -1,4 +1,4 @@
-interface Source {
+export interface Source {
   id: string;
   createdAt: Date;
   updatedAt: Date;
@@ -33,13 +33,17 @@ export interface CurrencyType {
   price: number;
 }
 
-interface CurrencyEntry {
+export interface CurrencyEntry {
   currencyTypeId: string;
   amount: number;
 }
 
 export interface CurrencyWithType extends Currency {
   currencyType: CurrencyType;
+}
+
+export interface CurrencyTypeWithSources extends CurrencyType {
+  sources: Source[];
 }
 
 export interface SourceWithCurrenciesAndTypes extends Source {
@@ -54,8 +58,23 @@ export interface ExtendedPortfolioSource extends ExtendedSource {
   portfolioPercentage: number;
 }
 
+export interface ExtendedCurrencyType extends CurrencyTypeWithSources {
+  totalBalance: number;
+  totalAmount: number;
+}
+
+export interface ExtendedPortfolioCurrency extends ExtendedCurrencyType {
+  portfolioPercentage: number;
+}
+
 export interface Portfolio {
   userId: string;
   totalBalance: number;
   extendedSources: ExtendedPortfolioSource[];
+}
+
+export interface PortfolioByCurrencies {
+  userId: string;
+  totalBalance: number;
+  extendedCurrencies: ExtendedPortfolioCurrency[];
 }

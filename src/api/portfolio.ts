@@ -1,5 +1,5 @@
 import { apiClient } from "./axios";
-import { Portfolio } from "../types";
+import { Portfolio, SourceType, CurrencyEntry, Source } from '../types';
 
 /*
  * API to manage the data related with the User's portfolio.
@@ -15,15 +15,15 @@ class PortfolioApi {
     return portfolio.data as unknown as Portfolio;
   };
 
-  //   static async createUserSource(name: string, currency: string) {
-  //     const source = await apiClient.post("/api/sources", { name, currency });
-  //     return source;
-  //   }
+  createUserSource = async (sourceTypeId: string, currenciesData: CurrencyEntry[]) => {
+    const source = await apiClient.post("/api/sources", {
+      sourceTypeId: sourceTypeId,
+      currenciesData: currenciesData,
+    });
+    return source.data as unknown as Source;
+  }
 
-  //   static async getUserSources() {
-  //     const sources = await apiClient.get("/api/sources");
-  //     return sources;
-  //   }
+
 }
 
 export const portfolioApi = new PortfolioApi();
