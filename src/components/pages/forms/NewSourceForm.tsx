@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { portfolioApi } from "../../../api/portfolio";
 import { crocantesApi } from "../../../api/crocantes";
 import { CurrencyType, SourceType, CurrencyEntry } from "../../../types";
 import toast from "react-hot-toast";
+import { PortfolioContext } from "@/contexts/PortfolioContext";
 
 const NewSourceForm = () => {
+  const { portfolio } = useContext(PortfolioContext);
+
   const [sourceTypes, setSourceTypes] = useState<SourceType[] | null>(null);
   const [currencies, setCurrencies] = useState<CurrencyType[] | null>(null);
 
@@ -40,10 +43,24 @@ const NewSourceForm = () => {
   useEffect(() => {
     const fetchSourceTypes = async () => {
       try {
-        const response = await crocantesApi.getSourceTypes();
-        setSourceTypes(response);
+        const sourceTypes = await crocantesApi.getSourceTypes();
 
-        const firstSourceType = response[0];
+        // @tbd Filter removing source types that are already in the portfolio
+
+        const portfolioSourcesIds = portfolio!.extendedSources.map(
+          (source) => source.sourceType.id,
+        );
+
+        const alreadyIncluded = (sourceTypeId: string) =>
+          portfolioSourcesIds.includes(sourceTypeId);
+
+        const filteredSourceTypes = sourceTypes.filter(
+          (sourceType) => !alreadyIncluded(sourceType.id),
+        );
+
+        setSourceTypes(filteredSourceTypes);
+
+        const firstSourceType = filteredSourceTypes[0];
         setSelectedSourceTypeId(firstSourceType.id);
 
         toast.success("Source Types fetched");
@@ -76,93 +93,93 @@ const NewSourceForm = () => {
 
   return (
     <form
-      onSubmit={(e) => handleCreateSource(e)}
-      className="flex flex-col gap-2"
+      onSubmit={handleCreateSource}
+      className="mb-2 flex flex-col gap-4 rounded-lg border-2 p-3"
     >
-      <h3>New Source </h3>
+      <div className="flex items-center justify-between ">
+        <select
+          onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+            setSelectedSourceTypeId(e.target.value)
+          }
+          value={selectedSourceTypeId}
+        >
+          {sourceTypes?.map((sourceType) => (
+            <option
+              className="text-black"
+              key={sourceType.id}
+              value={sourceType.id}
+            >
+              {sourceType.name}
+            </option>
+          ))}
+        </select>
+      </div>
 
-      <label htmlFor="sourceType">Source</label>
-      <select
-        className="text-black"
-        onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-          setSelectedSourceTypeId(e.target.value)
-        }
-        value={selectedSourceTypeId}
-      >
-        {sourceTypes?.map((sourceType) => (
-          <option
-            className="text-black"
-            key={sourceType.id}
-            value={sourceType.id}
+      <div className="flex flex-col gap-2">
+        {Array.from({ length: currenciesToAdd }, (_, index) => (
+          <div
+            key={index}
+            className="flex items-center justify-between rounded-lg border-2 p-2"
           >
-            {sourceType.name}
-          </option>
+            <select
+              value={selectedCurrencies[index]?.currencyTypeId}
+              onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                setSelectedCurrencies((prev) => {
+                  prev[index] = {
+                    currencyTypeId: e.target.value,
+                    amount: 0,
+                  };
+                  return [...prev];
+                })
+              }
+            >
+              {currencies?.map((currency) => (
+                <option key={currency.id} value={currency.id}>
+                  {currency.symbol}
+                </option>
+              ))}
+            </select>
+
+            <input
+              type="number"
+              step={0.00000000001}
+              value={selectedCurrencies[index]?.amount}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                setSelectedCurrencies((prev) => {
+                  prev[index] = {
+                    ...prev[index],
+                    amount: parseFloat(e.target.value),
+                  };
+                  return [...prev];
+                });
+              }}
+              className="selected-input"
+            />
+          </div>
         ))}
-      </select>
-
-      {Array.from({ length: currenciesToAdd }, (_, index) => (
-        <div key={index} className="flex flex-col gap-2">
-          <label htmlFor="currencyType">Currency</label>
-          <select
-            className="text-black"
-            value={selectedCurrencies[index]?.currencyTypeId}
-            onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-              setSelectedCurrencies((prev) => {
-                prev[index] = {
-                  currencyTypeId: e.target.value,
-                  amount: 0,
-                };
-                return [...prev];
-              })
-            }
-          >
-            {currencies?.map((currency) => (
-              <option key={currency.id} value={currency.id}>
-                {currency.symbol + " - " + currency.name}
-              </option>
-            ))}
-          </select>
-
-          <label htmlFor="amount">Amount</label>
-          <input
-            type="number"
-            step={0.00000000001}
-            value={selectedCurrencies[index]?.amount}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-              setSelectedCurrencies((prev) => {
-                prev[index] = {
-                  ...prev[index],
-                  amount: parseFloat(e.target.value),
-                };
-                return [...prev];
-              });
-            }}
-            className="text-black"
-          />
-        </div>
-      ))}
+      </div>
 
       <div className="flex items-center gap-2 self-end">
         {currenciesToAdd > 1 && (
           <button
-            className="h-10 w-10 self-end rounded-lg bg-white text-black"
+            className="self-end rounded-lg border-2 border-white bg-transparent px-2 py-1 text-white"
             type="button"
             onClick={handleAddLessCurrency}
           >
-            -
+            Remove currency
           </button>
         )}
         <button
-          className="h-10 w-10 self-end rounded-lg bg-white text-black"
+          className="self-end rounded-lg border-2 border-white bg-transparent px-2 py-1 text-white"
           type="button"
           onClick={handleAddAnotherCurrency}
         >
-          +
+          Add currency
         </button>
       </div>
 
       <button
-        className="mt-2 h-10 w-60 rounded-lg bg-white text-black"
+        className="mt-2 h-10 w-full rounded-lg bg-white text-black"
         type="submit"
       >
         Create

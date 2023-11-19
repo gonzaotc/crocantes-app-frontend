@@ -1,19 +1,13 @@
 import { useContext } from "react";
-import { UserContext } from "@/contexts/UserContext";
 import Head from "next/head";
-import toast from "react-hot-toast";
 import { PortfolioContext } from "@/contexts/PortfolioContext";
 import BalanceDisplayer from "../components/pages/home/BalanceDisplayer";
-import NewSourceForm from "../components/pages/forms/NewSourceForm";
+import UserHeader from "../components/pages/home/UserHeader";
+import PortfolioBySources from "../components/pages/home/PortfolioBySources";
+import Separator from "../components/shared/Separator";
 
 export default function Home() {
-  const { user, dispatch } = useContext(UserContext);
   const { portfolio, loadingPortfolio } = useContext(PortfolioContext);
-
-  const handleSignOut = () => {
-    dispatch({ type: "SIGN_OUT" });
-    toast.success("Signed out successfully");
-  };
 
   return (
     <>
@@ -29,21 +23,11 @@ export default function Home() {
         <></>
       ) : (
         <>
-          <p>home</p>
-
-          <div className="flex items-center justify-between">
-            <p>user: {user?.email}</p>
-            <button
-              onClick={handleSignOut}
-              className="rounded-xl bg-white px-4 py-2 text-black"
-            >
-              signout
-            </button>
-          </div>
-
+          <UserHeader />
+          <Separator className="h-10" />
           <BalanceDisplayer />
-
-          <NewSourceForm />
+          <Separator className="h-8" />
+          <PortfolioBySources />
         </>
       )}
     </>

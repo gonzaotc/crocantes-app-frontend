@@ -23,6 +23,10 @@ class PortfolioApi {
     return source.data as unknown as Source;
   }
 
+  deleteUserSource = async (sourceId: string) => {
+    await apiClient.delete(`/api/sources/${sourceId}`);
+  }
+
 
 }
 

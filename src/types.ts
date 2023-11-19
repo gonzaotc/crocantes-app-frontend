@@ -1,24 +1,28 @@
 export interface Source {
   id: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
   userId: string;
   sourceTypeId: string;
 }
 
 export interface SourceType {
   id: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
   name: string;
   symbol: string;
   url: string;
 }
 
+export interface SourceWithSourceType extends Source {
+  sourceType: SourceType;
+}
+
 interface Currency {
   id: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
   amount: number;
   currencyTypeId: string;
   sourceId: string;
@@ -26,8 +30,8 @@ interface Currency {
 
 export interface CurrencyType {
   id: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
   symbol: string;
   name: string;
   price: number;
@@ -46,7 +50,7 @@ export interface CurrencyTypeWithSources extends CurrencyType {
   sources: Source[];
 }
 
-export interface SourceWithCurrenciesAndTypes extends Source {
+export interface SourceWithCurrenciesAndTypes extends SourceWithSourceType {
   currencies: CurrencyWithType[];
 }
 
