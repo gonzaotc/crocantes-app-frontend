@@ -59,11 +59,11 @@ export interface SourceWithCurrenciesAndTypes extends SourceWithSourceType {
   currencies: CurrencyWithType[];
 }
 
-export interface ExtendedSource extends SourceWithCurrenciesAndTypes {
+export interface ExtendedSource extends SourceWithSourceTypeAndCurrencies {
   totalBalance: number;
 }
 
-export interface ExtendedPortfolioSource extends SourceWithSourceTypeAndCurrencies {
+export interface ExtendedPortfolioSource extends ExtendedSource {
   portfolioPercentage: number;
 }
 
