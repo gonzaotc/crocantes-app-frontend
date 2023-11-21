@@ -11,15 +11,30 @@ const Navbar = ({ className }: NavbarProps) => {
 
   return (
     <div className={className}>
-      <ul className="flex h-full justify-evenly items-center font-bold">
-        <li className={`link ${pathname === "/" && "link--active"}`}>
-          <Link href="/">H</Link>
+      <ul className="flex h-full items-center justify-evenly font-bold">
+        <li>
+          <Link
+            className={`link ${pathname === "/" && "link--active"}`}
+            href="/"
+          >
+            H
+          </Link>
         </li>
-        <li className={`link ${pathname === "/page2" && "link--active"}`}>
-          <Link href="/page2">P2</Link>
+        <li>
+          <Link
+            className={`link ${pathname === "/page2" && "link--active"}`}
+            href="/page2"
+          >
+            P2
+          </Link>
         </li>
-        <li className={`link ${pathname === "/page3" && "link--active"}`}>
-          <Link href="/page3">P3</Link>
+        <li>
+          <Link
+            className={`link ${pathname === "/page3" && "link--active"}`}
+            href="/page3"
+          >
+            P3
+          </Link>
         </li>
       </ul>
     </div>

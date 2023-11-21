@@ -73,7 +73,6 @@ const SourceToggler = ({ key, source }: SourceTogglerProps) => {
               </span>
             </div>
           ))}
-          {/* Delete Source */}
           <button
             className="self-end rounded-lg border-2 border-white bg-transparent px-2 py-1 text-white"
             onClick={handleDeleteSource}

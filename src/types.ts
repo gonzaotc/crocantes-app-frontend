@@ -15,8 +15,9 @@ export interface SourceType {
   url: string;
 }
 
-export interface SourceWithSourceType extends Source {
+export interface SourceWithSourceTypeAndCurrencies extends Source {
   sourceType: SourceType;
+  currencies: CurrencyWithType[];
 }
 
 interface Currency {
@@ -47,7 +48,7 @@ export interface CurrencyWithType extends Currency {
 }
 
 export interface CurrencyTypeWithSources extends CurrencyType {
-  sources: Source[];
+  sources: SourceWithSourceTypeAndCurrencies[];
 }
 
 export interface SourceWithCurrenciesAndTypes extends SourceWithSourceType {
