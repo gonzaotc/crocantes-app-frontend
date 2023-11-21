@@ -15,8 +15,8 @@ interface AppWrapperProps {
 
 const AppWrapper = ({ children }: AppWrapperProps) => {
   return (
-    <div className="bg-white">
-      <div className="relative mx-auto flex h-full w-full flex-col bg-neutral-900 text-white xs:max-w-[420px]">
+    <div className="bg-black sm:bg-white">
+      <div className="relative mx-auto flex h-full w-full flex-col bg-neutral-900 text-white xs:max-w-[480px]">
         <Toaster />
         <main className="hide-scrollbar h-[calc(100vh-65px)] overflow-y-auto px-[5.75%] py-[8%]">
           {children}
