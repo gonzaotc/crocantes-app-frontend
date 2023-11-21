@@ -5,8 +5,12 @@ import { CurrencyType, SourceType, CurrencyEntry } from "../../../types";
 import toast from "react-hot-toast";
 import { PortfolioContext } from "@/contexts/PortfolioContext";
 
-const NewSourceForm = () => {
-  const { portfolio } = useContext(PortfolioContext);
+interface NewSourceFormProps { 
+  handleToggleNewSourceForm: () => void;
+}
+
+const NewSourceForm = ({ handleToggleNewSourceForm }: NewSourceFormProps) => {
+  const { portfolio, handleRefreshPortfolio } = useContext(PortfolioContext);
 
   const [sourceTypes, setSourceTypes] = useState<SourceType[] | null>(null);
   const [currencies, setCurrencies] = useState<CurrencyType[] | null>(null);
@@ -34,6 +38,8 @@ const NewSourceForm = () => {
         selectedCurrencies,
       );
       toast.success("Created User Source");
+      handleRefreshPortfolio();
+      handleToggleNewSourceForm();
     } catch (error) {
       console.log(error);
       toast.error("Error creating User Source");

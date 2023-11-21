@@ -9,6 +9,7 @@ interface PortfolioContextValue {
   portfolio: Portfolio | null;
   portfolioByCurrencies: PortfolioByCurrencies | null;
   loadingPortfolio: boolean;
+  handleRefreshPortfolio: () => void;
 }
 
 interface PortfolioContextProviderProps {
@@ -19,6 +20,7 @@ const initialPortfolioContextValue: PortfolioContextValue = {
   portfolio: null,
   portfolioByCurrencies: null,
   loadingPortfolio: true,
+  handleRefreshPortfolio: () => {},
 };
 
 export const PortfolioContext = createContext<PortfolioContextValue>(
@@ -54,6 +56,10 @@ export const PortfolioContextProvider = ({
     }
   };
 
+  const handleRefreshPortfolio = async () => { 
+    await getUserPortfolio();
+  }
+
   useEffect(() => {
     if (user) {
       getUserPortfolio();
@@ -66,6 +72,7 @@ export const PortfolioContextProvider = ({
         portfolio,
         portfolioByCurrencies,
         loadingPortfolio,
+        handleRefreshPortfolio,
       }}
     >
       {children}

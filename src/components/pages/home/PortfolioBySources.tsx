@@ -4,6 +4,7 @@ import { dateToTimeAgo, fixed } from "@/utils/functions";
 import React, { useContext, useState } from "react";
 import NewSourceForm from "../forms/NewSourceForm";
 import toast from "react-hot-toast";
+import { portfolioApi } from "@/api/portfolio";
 
 interface SourceTogglerProps {
   key: string;
@@ -12,15 +13,19 @@ interface SourceTogglerProps {
 
 const SourceToggler = ({ key, source }: SourceTogglerProps) => {
   const [expanded, setExpanded] = useState(false);
-
-  const handleDeleteSource = (
+  const { handleRefreshPortfolio } = useContext(PortfolioContext);
+  
+  const handleDeleteSource = async (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {
     // prevent bubling
     e.stopPropagation();
 
     try {
+      await portfolioApi.deleteUserSource(source.id);
       toast.success("Deleted source");
+      handleRefreshPortfolio();
+
     } catch (error) {
       console.log(error);
       toast.error("Error deleting source");
@@ -99,7 +104,9 @@ const PortfolioBySources = () => {
         ))}
       </div>
       {/* @tbd to handle caching NewSourceData info to avoid re-fetching from API */}
-      {newSourceFormOpen && <NewSourceForm />}
+      {newSourceFormOpen && <NewSourceForm
+        handleToggleNewSourceForm={handleToggleNewSourceForm}
+      />}
       <button
         className="self-end rounded-lg border-2 border-white bg-transparent p-2 text-white"
         onClick={handleToggleNewSourceForm}
