@@ -29,6 +29,8 @@ interface Currency {
   createdAt: string;
   updatedAt: string;
   amount: number;
+  apy: number;
+  apr: number;
   currencyTypeId: string;
   sourceId: string;
 }
@@ -44,7 +46,9 @@ export interface CurrencyType {
 
 export interface CurrencyEntry {
   currencyTypeId: string;
-  amount: number;
+  amount?: number;
+  apy?: number;
+  apr?: number;
 }
 
 export interface CurrencyWithType extends Currency {

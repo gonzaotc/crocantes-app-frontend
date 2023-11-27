@@ -1,4 +1,14 @@
 @tailwind base;
+
+/* Remove Input Number Arrows */
+@layer base {
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+}
+
 @tailwind components;
 
 h1 {
@@ -35,5 +45,10 @@ h3 {
 
 select,
 .selected-input {
-  @apply rounded-md border border-neutral-600 bg-transparent px-3 py-2 text-neutral-100 text-white;
+  @apply rounded-md border border-neutral-600 bg-transparent px-3 py-2 text-white;
+  @apply appearance-none w-full;
+}
+
+select {
+  @apply cursor-pointer;
 }

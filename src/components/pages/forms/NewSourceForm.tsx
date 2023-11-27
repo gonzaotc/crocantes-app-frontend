@@ -31,7 +31,6 @@ const NewSourceForm = ({ handleToggleNewSourceForm }: NewSourceFormProps) => {
 
   const handleCreateSource = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     try {
       await portfolioApi.createUserSource(
         selectedSourceTypeId,
@@ -82,9 +81,7 @@ const NewSourceForm = ({ handleToggleNewSourceForm }: NewSourceFormProps) => {
         setCurrencies(response);
 
         const firstCurrency = response[0];
-        setSelectedCurrencies([
-          { currencyTypeId: firstCurrency.id, amount: 0 },
-        ]);
+        setSelectedCurrencies([ { currencyTypeId: firstCurrency.id }]);
 
         toast.success("Currencies fetched");
       } catch (error) {
@@ -125,19 +122,18 @@ const NewSourceForm = ({ handleToggleNewSourceForm }: NewSourceFormProps) => {
         {Array.from({ length: currenciesToAdd }, (_, index) => (
           <div
             key={index}
-            className="flex items-center justify-between rounded-lg border-2 p-2"
+            className="flex items-center justify-between rounded-lg border-2 p-2 gap-1"
           >
             <select
               value={selectedCurrencies[index]?.currencyTypeId}
               onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
                 setSelectedCurrencies((prev) => {
-                  prev[index] = {
-                    currencyTypeId: e.target.value,
-                    amount: 0,
-                  };
+                  prev[index] = { currencyTypeId: e.target.value };
                   return [...prev];
                 })
               }
+              placeholder="Currency"
+              className=""
             >
               {currencies?.map((currency) => (
                 <option key={currency.id} value={currency.id}>
@@ -160,7 +156,43 @@ const NewSourceForm = ({ handleToggleNewSourceForm }: NewSourceFormProps) => {
                 });
               }}
               className="selected-input"
+              placeholder="Amount"
             />
+        
+            <input
+              type="number"
+              step={0.00000000001}
+              value={selectedCurrencies[index]?.apr}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                setSelectedCurrencies((prev) => {
+                  prev[index] = {
+                    ...prev[index],
+                    apr : parseFloat(e.target.value),
+                  };
+                  return [...prev];
+                });
+              }}
+              className="selected-input"
+              placeholder="APR"
+            />
+
+            <input
+              type="number"
+              step={0.00000000001}
+              value={selectedCurrencies[index]?.apy}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                setSelectedCurrencies((prev) => {
+                  prev[index] = {
+                    ...prev[index],
+                    apy : parseFloat(e.target.value),
+                  };
+                  return [...prev];
+                });
+              }}
+              className="selected-input"
+              placeholder="APY"
+            />
+
           </div>
         ))}
       </div>

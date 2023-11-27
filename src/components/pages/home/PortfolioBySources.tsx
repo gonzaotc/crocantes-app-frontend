@@ -67,8 +67,11 @@ const SourceToggler = ({ key, source }: SourceTogglerProps) => {
                   {currency.amount + " " + currency.currencyType.symbol}
                 </p>
                 <p>
-                  {fixed(currency.amount * currency.currencyType.price) +
-                    " USD"}
+                  {fixed(currency.amount * currency.currencyType.price) + " USD"}
+                </p>
+                <p>
+                  {'APR: ' + currency.apr + "% "}
+                  {'APY: ' +  currency.apy + "%"}
                 </p>
               </span>
             </div>
