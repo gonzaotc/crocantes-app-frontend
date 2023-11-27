@@ -33,5 +33,11 @@ export const transformPortfolioByCurrencies = (portfolio: Portfolio): PortfolioB
     for (const currency of portfolioByCurrencies.extendedCurrencies) {
         currency.portfolioPercentage = (currency.totalBalance / portfolioByCurrencies.totalBalance) * 100;
     }
-    return portfolioByCurrencies;
+
+    const sortedPortfolioCurrencies = portfolioByCurrencies.extendedCurrencies.sort((a, b) => b.totalBalance - a.totalBalance);
+
+    return {
+        ...portfolioByCurrencies,
+        extendedCurrencies: sortedPortfolioCurrencies,
+    };
 }
