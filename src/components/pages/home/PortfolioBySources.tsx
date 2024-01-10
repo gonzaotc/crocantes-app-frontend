@@ -14,7 +14,7 @@ interface SourceTogglerProps {
 const SourceToggler = ({ key, source }: SourceTogglerProps) => {
   const [expanded, setExpanded] = useState(false);
   const { handleRefreshPortfolio } = useContext(PortfolioContext);
-  
+
   const handleDeleteSource = async (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {
@@ -25,7 +25,6 @@ const SourceToggler = ({ key, source }: SourceTogglerProps) => {
       await portfolioApi.deleteUserSource(source.id);
       toast.success("Deleted source");
       handleRefreshPortfolio();
-
     } catch (error) {
       console.log(error);
       toast.error("Error deleting source");
@@ -67,11 +66,13 @@ const SourceToggler = ({ key, source }: SourceTogglerProps) => {
                   {currency.amount + " " + currency.currencyType.symbol}
                 </p>
                 <p>
-                  {fixed(currency.amount * currency.currencyType.price) + " USD"}
+                  {fixed(currency.amount * currency.currencyType.price) +
+                    " USD"}
                 </p>
                 <p>
-                  {'APR: ' + currency.apr + "% "}
-                  {'APY: ' +  currency.apy + "%"}
+                  {"APR: " + currency.apr + "% "}
+
+                  {"APY: " + currency.apy + "%"}
                 </p>
               </span>
             </div>
@@ -106,9 +107,9 @@ const PortfolioBySources = () => {
         ))}
       </div>
       {/* @tbd to handle caching NewSourceData info to avoid re-fetching from API */}
-      {newSourceFormOpen && <NewSourceForm
-        handleToggleNewSourceForm={handleToggleNewSourceForm}
-      />}
+      {newSourceFormOpen && (
+        <NewSourceForm handleToggleNewSourceForm={handleToggleNewSourceForm} />
+      )}
       <button
         className="self-end rounded-lg border-2 border-white bg-transparent p-2 text-white"
         onClick={handleToggleNewSourceForm}
