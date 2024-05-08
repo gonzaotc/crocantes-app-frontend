@@ -8,3 +8,5 @@ DYOR.
 
 
 BE: https://github.com/gonzaotc/crocantes-app-backend
+
+Disclaimer: when you visit the app, it will re-start the deployed server on Render, because I'm not paying for the maintenance of this sht and I can wait 30sec for render to get it up :)
