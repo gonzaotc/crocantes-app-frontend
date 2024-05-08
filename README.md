@@ -5,3 +5,6 @@ It tracks my dependency on different fintech providers, (fuck you FTX), the vari
 It fits my usecase and could fit yours, but aware that I build this under poor sleep, three double expresso lattes on, and might have some security leaks and bugs. 
 
 DYOR.
+
+
+BE: https://github.com/gonzaotc/crocantes-app-backend
