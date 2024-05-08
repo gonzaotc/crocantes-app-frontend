@@ -5,16 +5,14 @@ import React, { useContext, useState } from "react";
 import { PortfolioByCurrencies } from "../../../types";
 
 interface SourceTogglerProps {
-  key: string;
   currency: ExtendedPortfolioCurrency;
 }
 
-const SourceToggler = ({ key, currency }: SourceTogglerProps) => {
+const SourceToggler = ({ currency }: SourceTogglerProps) => {
   const [expanded, setExpanded] = useState(false);
 
   return (
     <div
-      key={key}
       onClick={() => setExpanded((prev) => !prev)}
       className="flex cursor-pointer flex-col gap-4 rounded-lg border-2 p-3"
     >
@@ -45,9 +43,9 @@ const SourceToggler = ({ key, currency }: SourceTogglerProps) => {
 
       {expanded && (
         <div className="flex flex-col gap-2">
-          {currency.sources.map((source) => (
+          {currency.sources.map((source, idx) => (
             <div
-              key={currency.id}
+              key={idx}
               className="flex items-center justify-between rounded-lg border-2 p-2"
             >
               <span className="flex flex-col">
@@ -74,8 +72,8 @@ const PortfolioByCurrency = () => {
     <div className="flex flex-col">
       <h2 className="mb-2">Currencies</h2>
       <div className="mb-2 flex flex-col gap-2">
-        {portfolioByCurrencies!.extendedCurrencies.map((currency) => (
-          <SourceToggler key={currency.id} currency={currency} />
+        {portfolioByCurrencies!.extendedCurrencies.map((currency, idx) => (
+          <SourceToggler key={idx} currency={currency} />
         ))}
       </div>
     </div>

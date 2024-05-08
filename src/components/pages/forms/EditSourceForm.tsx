@@ -1,47 +1,138 @@
 import React, { useContext, useEffect, useState } from "react";
 import { portfolioApi } from "../../../api/portfolio";
 import { crocantesApi } from "../../../api/crocantes";
-import { CurrencyType, SourceType, CurrencyEntry } from "../../../types";
+import {
+  CurrencyType,
+  SourceType,
+  CurrencyEntry,
+  ExtendedPortfolioSource,
+  UpdateCurrencyEntry,
+} from "../../../types";
 import toast from "react-hot-toast";
 import { PortfolioContext } from "@/contexts/PortfolioContext";
 
-interface NewSourceFormProps {
-  handleToggleNewSourceForm: () => void;
+interface EditSourceFormProps {
+  handleCloseNewSourceForm: () => void;
+  editingSource: ExtendedPortfolioSource;
 }
 
-const NewSourceForm = ({ handleToggleNewSourceForm }: NewSourceFormProps) => {
+const EditSourceForm = ({
+  handleCloseNewSourceForm,
+  editingSource,
+}: EditSourceFormProps) => {
   const { portfolio, handleRefreshPortfolio } = useContext(PortfolioContext);
 
   const [sourceTypes, setSourceTypes] = useState<SourceType[] | null>(null);
   const [currencies, setCurrencies] = useState<CurrencyType[] | null>(null);
 
-  const [currenciesToAdd, setCurrenciesToAdd] = useState(1);
-
-  const [selectedSourceTypeId, setSelectedSourceTypeId] = useState("");
-  const [selectedCurrencies, setSelectedCurrencies] = useState<CurrencyEntry[]>(
-    [],
+  const [currenciesToAdd, setCurrenciesToAdd] = useState(
+    editingSource.currencies.length,
   );
+
+  const [selectedSourceTypeId, setSelectedSourceTypeId] = useState(
+    editingSource.sourceTypeId,
+  );
+
+  const [selectedCurrencies, setSelectedCurrencies] = useState<CurrencyEntry[]>(
+    () =>
+      editingSource.currencies.map((currency) => ({
+        currencyTypeId: currency.currencyTypeId,
+        amount: currency.amount,
+        apy: currency.apy,
+        apr: currency.apr,
+      })),
+  );
+
+  useEffect(() => {
+    console.log("editingSource", editingSource);
+  }, [editingSource]);
+
+  useEffect(() => {
+    console.log("selectedCurrencies", selectedCurrencies);
+  }, [selectedCurrencies]);
 
   const handleAddAnotherCurrency = () => {
     setCurrenciesToAdd((prev) => prev + 1);
   };
   const handleAddLessCurrency = () => {
     setCurrenciesToAdd((prev) => prev - 1);
+    // Remove last currency
   };
 
-  const handleCreateSource = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleEditSource = async (e: React.FormEvent<HTMLFormElement>) => {
+    // @DEV: ADDING AND REMOVING IS BUGGED. FIX IT
+    // @dev: Editing currencies values is working.
+    // @DEV: In the meanwhile, to add or remove currencies just delete and add the source again.
     e.preventDefault();
+
+    // @DEV: implement a custom confirm dialog, works for now and satisfies my needs lol
+    const confirmUpdate = window.confirm(
+      "Are you sure you want to update this source?",
+    );
+    if (!confirmUpdate) return;
+
+    console.log("editingSource.currencies", editingSource.currencies);
+    console.log("selectedCurrencies", selectedCurrencies);
+
+    // const newCurrencies: CurrencyEntry[] = selectedCurrencies.filter(
+    //   (currency) =>
+    //     !editingSource.currencies.some(
+    //       (editingCurrency) =>
+    //         editingCurrency.currencyTypeId === currency.currencyTypeId,
+    //     ),
+    // );
+    // console.log("newCurrencies", newCurrencies);
+
+    // const deletedCurrencies: string[] = editingSource.currencies
+    //   .filter(
+    //     (editingCurrency) =>
+    //       !selectedCurrencies.some(
+    //         (currency) =>
+    //           currency.currencyTypeId === editingCurrency.currencyTypeId,
+    //       ),
+    //   )
+    //   .map((currency) => currency.currencyTypeId);
+    // console.log("deletedCurrencies", deletedCurrencies);
+
+    const updatedCurrencies: UpdateCurrencyEntry[] = selectedCurrencies
+      .filter((currency) =>
+        editingSource.currencies.some(
+          (editingCurrency) =>
+            editingCurrency.currencyTypeId === currency.currencyTypeId,
+        ),
+      )
+      .map((currency) => {
+        const editingCurrency = editingSource.currencies.find(
+          (editingCurrency) =>
+            editingCurrency.currencyTypeId === currency.currencyTypeId,
+        )!; // We know it exists because of the filter above
+
+        return {
+          id: editingCurrency.id,
+          amount: currency.amount,
+          apr: currency.apr,
+          apy: currency.apy,
+        };
+      });
+
+    const newCurrencies: CurrencyEntry[] = [];
+    const deletedCurrencies: string[] = [];
+
+    console.log("updatedCurrencies", updatedCurrencies);
     try {
-      await portfolioApi.createUserSource(
-        selectedSourceTypeId,
-        selectedCurrencies,
+      await portfolioApi.updateUserSource(
+        editingSource.id,
+        newCurrencies,
+        deletedCurrencies,
+        updatedCurrencies,
       );
-      toast.success("Created User Source");
+
+      toast.success("Updated User Source");
       handleRefreshPortfolio();
-      handleToggleNewSourceForm();
+      handleCloseNewSourceForm();
     } catch (error) {
       console.log(error);
-      toast.error("Error creating User Source");
+      toast.error("Error updating User Source");
     }
   };
 
@@ -50,23 +141,7 @@ const NewSourceForm = ({ handleToggleNewSourceForm }: NewSourceFormProps) => {
       try {
         const sourceTypes = await crocantesApi.getSourceTypes();
 
-        // @tbd Filter removing source types that are already in the portfolio
-
-        const portfolioSourcesIds = portfolio!.extendedSources.map(
-          (source) => source.sourceType.id,
-        );
-
-        const alreadyIncluded = (sourceTypeId: string) =>
-          portfolioSourcesIds.includes(sourceTypeId);
-
-        const filteredSourceTypes = sourceTypes.filter(
-          (sourceType) => !alreadyIncluded(sourceType.id),
-        );
-
-        setSourceTypes(filteredSourceTypes);
-
-        const firstSourceType = filteredSourceTypes[0];
-        setSelectedSourceTypeId(firstSourceType.id);
+        setSourceTypes(sourceTypes);
 
         toast.success("Source Types fetched");
       } catch (error) {
@@ -79,9 +154,6 @@ const NewSourceForm = ({ handleToggleNewSourceForm }: NewSourceFormProps) => {
       try {
         const response = await crocantesApi.getCurrencyTypes();
         setCurrencies(response);
-
-        const firstCurrency = response[0];
-        setSelectedCurrencies([{ currencyTypeId: firstCurrency.id }]);
 
         toast.success("Currencies fetched");
       } catch (error) {
@@ -96,16 +168,11 @@ const NewSourceForm = ({ handleToggleNewSourceForm }: NewSourceFormProps) => {
 
   return (
     <form
-      onSubmit={handleCreateSource}
+      onSubmit={handleEditSource}
       className="mb-2 flex flex-col gap-4 rounded-lg border-2 p-3"
     >
       <div className="flex items-center justify-between ">
-        <select
-          onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-            setSelectedSourceTypeId(e.target.value)
-          }
-          value={selectedSourceTypeId}
-        >
+        <select disabled={true} value={selectedSourceTypeId}>
           {sourceTypes?.map((sourceType) => (
             <option
               className="text-black"
@@ -126,12 +193,7 @@ const NewSourceForm = ({ handleToggleNewSourceForm }: NewSourceFormProps) => {
           >
             <select
               value={selectedCurrencies[index]?.currencyTypeId}
-              onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                setSelectedCurrencies((prev) => {
-                  prev[index] = { currencyTypeId: e.target.value };
-                  return [...prev];
-                })
-              }
+              disabled={true}
               placeholder="Currency"
               className=""
             >
@@ -143,9 +205,8 @@ const NewSourceForm = ({ handleToggleNewSourceForm }: NewSourceFormProps) => {
             </select>
 
             <input
-              type="number"
-              step={0.00000000001}
               value={selectedCurrencies[index]?.amount}
+              type="number"
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 setSelectedCurrencies((prev) => {
                   prev[index] = {
@@ -161,7 +222,6 @@ const NewSourceForm = ({ handleToggleNewSourceForm }: NewSourceFormProps) => {
 
             <input
               type="number"
-              step={0.00000000001}
               value={selectedCurrencies[index]?.apr}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 setSelectedCurrencies((prev) => {
@@ -178,7 +238,6 @@ const NewSourceForm = ({ handleToggleNewSourceForm }: NewSourceFormProps) => {
 
             <input
               type="number"
-              step={0.00000000001}
               value={selectedCurrencies[index]?.apy}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 setSelectedCurrencies((prev) => {
@@ -196,7 +255,7 @@ const NewSourceForm = ({ handleToggleNewSourceForm }: NewSourceFormProps) => {
         ))}
       </div>
 
-      <div className="flex items-center gap-2 self-end">
+      {/* <div className="flex items-center gap-2 self-end">
         {currenciesToAdd > 1 && (
           <button
             className="self-end rounded-lg border-2 border-white bg-transparent px-2 py-1 text-white"
@@ -213,19 +272,19 @@ const NewSourceForm = ({ handleToggleNewSourceForm }: NewSourceFormProps) => {
         >
           Add currency
         </button>
-      </div>
+      </div> */}
 
       <button
         className="mt-1 h-10 w-full rounded-lg bg-white text-black"
         type="submit"
       >
-        Create
+        Update
       </button>
 
       <button
         className="h-10 w-full rounded-lg border-2 border-white bg-transparent text-white"
         type="button"
-        onClick={handleToggleNewSourceForm}
+        onClick={handleCloseNewSourceForm}
       >
         Cancel
       </button>
@@ -233,4 +292,4 @@ const NewSourceForm = ({ handleToggleNewSourceForm }: NewSourceFormProps) => {
   );
 };
 
-export default NewSourceForm;
+export default EditSourceForm;

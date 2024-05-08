@@ -5,13 +5,17 @@ import React, { useContext, useState } from "react";
 import NewSourceForm from "../forms/NewSourceForm";
 import toast from "react-hot-toast";
 import { portfolioApi } from "@/api/portfolio";
+import EditSourceForm from "../forms/EditSourceForm";
 
 interface SourceTogglerProps {
-  key: string;
   source: ExtendedPortfolioSource;
+  handleOpenEditSourceForm: (source: ExtendedPortfolioSource) => void;
 }
 
-const SourceToggler = ({ key, source }: SourceTogglerProps) => {
+const SourceToggler = ({
+  source,
+  handleOpenEditSourceForm,
+}: SourceTogglerProps) => {
   const [expanded, setExpanded] = useState(false);
   const { handleRefreshPortfolio } = useContext(PortfolioContext);
 
@@ -20,6 +24,12 @@ const SourceToggler = ({ key, source }: SourceTogglerProps) => {
   ) => {
     // prevent bubling
     e.stopPropagation();
+
+    // @DEV: implement a custom confirm dialog, works for now and satisfies my needs lol
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this source?",
+    );
+    if (!confirmDelete) return;
 
     try {
       await portfolioApi.deleteUserSource(source.id);
@@ -31,9 +41,17 @@ const SourceToggler = ({ key, source }: SourceTogglerProps) => {
     }
   };
 
+  const handleEditSource = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+  ) => {
+    // prevent bubling
+    e.stopPropagation();
+    handleOpenEditSourceForm(source);
+    setExpanded(false);
+  };
+
   return (
     <div
-      key={key}
       onClick={() => setExpanded((prev) => !prev)}
       className="flex cursor-pointer flex-col gap-4 rounded-lg border-2 p-3"
     >
@@ -52,9 +70,9 @@ const SourceToggler = ({ key, source }: SourceTogglerProps) => {
 
       {expanded && (
         <div className="flex flex-col gap-2">
-          {source.currencies.map((currency) => (
+          {source.currencies.map((currency, idx) => (
             <div
-              key={currency.id}
+              key={idx}
               className="flex items-center justify-between rounded-lg border-2 p-2"
             >
               <span className="flex flex-col">
@@ -77,12 +95,20 @@ const SourceToggler = ({ key, source }: SourceTogglerProps) => {
               </span>
             </div>
           ))}
-          <button
-            className="self-end rounded-lg border-2 border-white bg-transparent px-2 py-1 text-white"
-            onClick={handleDeleteSource}
-          >
-            Delete source
-          </button>
+          <div className="flex justify-end gap-2">
+            <button
+              className="rounded-lg border-2 border-white bg-transparent px-2 py-1 text-white"
+              onClick={handleEditSource}
+            >
+              Edit Source
+            </button>
+            <button
+              className="rounded-lg border-2 border-white bg-transparent px-2 py-1 text-white"
+              onClick={handleDeleteSource}
+            >
+              Delete source
+            </button>
+          </div>
         </div>
       )}
     </div>
@@ -94,28 +120,54 @@ const PortfolioBySources = () => {
 
   const [newSourceFormOpen, setNewSourceFormOpen] = useState(false);
 
+  const [editingSource, setEditingSource] =
+    useState<ExtendedPortfolioSource | null>(null); // [1
+  const [editSourceFormOpen, setEditSourceFormOpen] = useState(false);
+
   const handleToggleNewSourceForm = () => {
     setNewSourceFormOpen((prev) => !prev);
+  };
+
+  const handleOpenEditSourceForm = (source: ExtendedPortfolioSource) => {
+    setEditingSource(source);
+    setEditSourceFormOpen(true);
+  };
+
+  const handleCloseEditSourceForm = () => {
+    setEditSourceFormOpen(false);
   };
 
   return (
     <div className="flex flex-col">
       <h2 className="mb-2">Sources</h2>
       <div className="mb-2 flex flex-col gap-2">
-        {portfolio?.extendedSources.map((source) => (
-          <SourceToggler key={source.id} source={source} />
+        {portfolio?.extendedSources.map((source, idx) => (
+          <SourceToggler
+            key={idx}
+            source={source}
+            handleOpenEditSourceForm={handleOpenEditSourceForm}
+          />
         ))}
       </div>
       {/* @tbd to handle caching NewSourceData info to avoid re-fetching from API */}
       {newSourceFormOpen && (
         <NewSourceForm handleToggleNewSourceForm={handleToggleNewSourceForm} />
       )}
-      <button
-        className="self-end rounded-lg border-2 border-white bg-transparent p-2 text-white"
-        onClick={handleToggleNewSourceForm}
-      >
-        {newSourceFormOpen ? "Cancel" : "Add source"}
-      </button>
+      {editSourceFormOpen && editingSource && (
+        <EditSourceForm
+          handleCloseNewSourceForm={handleCloseEditSourceForm}
+          editingSource={editingSource}
+        />
+      )}
+
+      {!newSourceFormOpen && (
+        <button
+          className="self-end rounded-lg border-2 border-white bg-transparent p-2 text-white"
+          onClick={handleToggleNewSourceForm}
+        >
+          Add source
+        </button>
+      )}
     </div>
   );
 };
